@@ -1,0 +1,14 @@
+#(Route('lucky/number/{max}'
+public function number(int $max): Response
+
+$number =  random_int(0, $max)
+return new Response(
+	'<html><body>Lucky number: '.$number.'</body></html>'
+);
+
+
+
+
+
+Route('/produit', name="")
+public function produit())

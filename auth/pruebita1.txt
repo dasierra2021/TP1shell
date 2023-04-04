@@ -1,0 +1,14 @@
+ Blocking "99.37.212.76/32" for 120 secs
+ Blocking "99.37.212.76/32" for 120 secs
+ Blocking "99.37.212.76/32" for 1920 secs
+ Blocking "99.37.212.76/32" for 1920 secs
+ Blocking "99.37.212.76/32" for 240 secs
+ Blocking "99.37.212.76/32" for 240 secs
+ Blocking "99.37.212.76/32" for 480 secs
+ Blocking "99.37.212.76/32" for 480 secs
+ Blocking "99.37.212.76/32" for 960 secs
+ Blocking "99.37.212.76/32" for 960 secs
+ Blocking "99.37.246.236/32" for 120 secs
+ Blocking "99.37.246.236/32" for 240 secs
+ Blocking "99.37.246.236/32" for 480 secs
+ Blocking "99.37.246.236/32" for 960 secs
