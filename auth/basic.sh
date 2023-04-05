@@ -82,28 +82,59 @@ zgrep "Blocking" $2 | cut -d "]" -f 2 | cut -d " " -f 5 | awk '
 ;;
 "-D")	
 
-attF=$(zgrep "Attack from" $2 | zgrep $3 | cut -d ':' -f 2- | cut -d '[' -f 1 | cut -d "m" -f 1 | tail -1)
-attD=$(zgrep "Attack from" $2 | zgrep $3 | cut -d ':' -f 2- | cut -d '[' -f 1 | cut -d "m" -f 1 | head -1)
+zgrep "Attack from" $2 | zgrep $3 | cut -d ':' -f 2- | cut -d '[' -f 1 | cut -d "m" -f 1 > execD.txt
 
-echo "La date de début des attaques de l'adresse $2 est:"
-date --date="$attD"
+echo "La date de début des attaques de l'adresse $3 est:"
+date +"%D %T" --file=execD.txt | sort -n | head -1
 
 echo "  "
 
-echo "La date de fin des attaques de l'adresse $2 est:"
-date --date="$attF"
+echo "La date de fin des attaques de l'adresse $3 est:"
+date +"%D %T" --file=execD.txt | sort -n | tail -1
 
 ;;
-"-f")	echo "Partie 10: pas fait";;
+"-f")	
+
+zgrep "Accepted publickey for" $2 | cut -d ':' -f 2- | cut -d '[' -f 1 | cut -d "m" -f 1 > execf.txt
+
+date +"%W" --file=execf.txt | uniq -c | sed 's/..$//' | tr -d " " | awk '{ total += $1; count++ } END { print total/count }'
+
+;;
+
+"-F")
+
+zgrep "Invalid user"  $2 | cut -d ':' -f 2- | cut -d '[' -f 1 | cut -d "m" -f 1 | sed -e 's/\(.\{6\}\).*/\1/' | uniq -c | sed 's/.......$//' | tr -d " " | awk '{ total += $1; count++ } END { print total/count }'
+
+;;
 
 
-"-F")	echo "Partie 11: pas fait";;
+"-c")
+
+zgrep "Accepted publickey for" $2 | cut -d ':' -f 2- | cut -d '[' -f 1 | cut -d "m" -f 1 > cdate.txt
+date +"%s" --file=cdate.txt > cts.txt
+zgrep "Accepted publickey for" $2 | cut -d "[" -f 2| cut -d "]" -f 1 > cserveur.txt
+zgrep "Accepted publickey for" $2 | cut -d "]" -f 2 | cut -d " " -f 5  > cip.txt
+zgrep "Accepted publickey for" $2 | cut -d "]" -f 2 | cut -d " " -f 7  > cuser.txt
+
+echo "date;ts;serveur;ip;user" > output.csv
+paste cdate.txt cts.txt cserveur.txt cip.txt cuser.txt | awk -F '\t' '{print $1";"$2";"$3";"$4";"$5";"$6}' >> output.csv
+
+;;
+
+"-C")	
+
+zgrep "Invalid user" $2 | cut -d ':' -f 2- | cut -d '[' -f 1 | cut -d "m" -f 1 > cdate2.txt
+date +"%s" --file=cdate2.txt > cts2.txt
+zgrep "Invalid user" $2 | cut -d "[" -f 2| cut -d "]" -f 1 > cserveur2.txt
+zgrep "Invalid user" $2 | cut -d "]" -f 2 | cut -d " " -f 6  > cip2.txt
+zgrep "Invalid user" $2 | cut -d "]" -f 2 | cut -d " " -f 4  > cuser2.txt
+
+echo "date;ts;serveur;ip;user" > output2.csv
+paste cdate2.txt cts2.txt cserveur2.txt cip2.txt cuser2.txt | awk -F '\t' '{print $1";"$2";"$3";"$4";"$5";"$6}' >> output2.csv
 
 
-"-c")	echo "Partie 12: pas fait";;
 
-
-"-C")	echo "Partie 13: pas fait";;
+;;
 
 
 
