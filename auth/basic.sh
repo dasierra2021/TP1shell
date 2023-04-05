@@ -34,43 +34,37 @@ echo "${IP_ACC}"
 
 "-I")	
 echo "La liste des adresses IP des utilisateurs qui n'ont pas réussi à se connecter sont les suivantes:"
-IP_REJ=$(zgrep "Invalid user" $2 | cut -d "]" -f 2 | cut -d " " -f 6 | uniq | sort -u)
+IP_REJ=$(zgrep "Invalid user" $2 | cut -d "]" -f 2 | cut -d " " -f 6 | uniq | sort -u) #"zgrep" pour rechercher toutes les lignes contenant le texte "Invalid user"; "cut" pour extraire l'adresse IP de l'utilisateur à partir de la sixieme colonne de chaque ligne; "uniq" pour éliminer les doublons, puis triées par ordre croissant à l'aide de la commande "sort".
 echo "${IP_REJ}"
 ;;
 
 "-b")	
-
 echo "La liste des adresses IP des utilisateurs qui étaient bloqués est la suivante:"
-IP_BLOCK=$(zgrep "Blocking" $2 | cut -d "]" -f 2 | cut -d " " -f 3 | tr -d '"' | cut -d "/" -f 1 | uniq | sort -u )
+IP_BLOCK=$(zgrep "Blocking" $2 | cut -d "]" -f 2 | cut -d " " -f 3 | tr -d '"' | cut -d "/" -f 1 | uniq | sort -u ) # "zgrep" pour rechercher toutes les lignes contenant le texte "Blocking"; "cut" pour extraire l'adresse IP à partir de la troisième colonne de chaque ligne; tr pour supprimer les guillemets doubles qui peuvent être présents dans certaines adresses IP, puis la commande cut pour extraire la partie de l'adresse IP avant le slash.
+# Les adresses IP sont ensuite filtrées à l'aide de la commande "uniq" pour éliminer les doublons, puis triées par ordre croissant à l'aide de la commande "sort".
 echo "${IP_BLOCK}"
-
 echo "Le nombre total des utilisateurs qui étaient bloqués est:"
 zgrep "Blocking" $2 | cut -d "]" -f 2 | cut -d " " -f 3 | tr -d '"' | cut -d "/" -f 1 | uniq | wc -l
-
-
+#this command is a good option to obtain the total number of blocked users because it searches for a specific keyword related to blocking, extracts the necessary information, removes unnecessary characters, and counts the number of unique IP addresses, providing an accurate and concise summary of the number of blocked users.
 ;;
 
-"-B")	
+"-B")	#Cette commande permet d'obtenir une liste des adresses IP qui ont été bloquées, suivie de leur durée totale de blocage en secondes. Elle recherche d'abord le mot-clé "Blocage" dans le fichier journal spécifié par le deuxième argument ($2). Elle utilise ensuite une série de commandes de manipulation de chaînes de caractères pour extraire les informations nécessaires, telles que l'adresse IP et la durée totale de blocage.
+#La commande utilise ensuite la commande "awk" pour séparer l'adresse IP du temps de blocage total et additionne le temps de blocage pour chaque adresse IP unique. Enfin, la commande utilise les commandes "sort" et "tr" pour trier et formater les résultats de manière conviviale.
 echo "La liste des adresses IP des utilisateurs qui étaient bloquées, ainsi que leur temps de blocage (en secondes) est la suivante:"
 zgrep "Blocking" $2 | cut -d "]" -f 2 | cut -d "(" -f 1 | cut -d ":" -f 2 | awk '
 { split($2,ip,"/"); total[ip[1]]+=$4 } END {for (i in total) print i, " time blocked: ", total[i], " secs"}'| tr -d '"' | sort -u
-
-
 ;;
-"-n")	
 
+"-n")	#Cette commande est une bonne option pour obtenir cette liste car elle permet de filtrer les adresses IP des utilisateurs qui ont été bloqués, afin de ne garder que ceux qui ont été rejetés mais qui n'ont pas été bloqués. La commande "comm" est particulièrement utile pour cela car elle permet de comparer les deux fichiers et de récupérer les lignes qui n'apparaissent pas dans les deux fichiers.
 zgrep "Blocking" $2 | cut -d "]" -f 2 | cut -d " " -f 3 | tr -d '"' | cut -d "/" -f 1 | uniq | sort -u > IP_BLOCK
 zgrep "Invalid user" $2 | cut -d "]" -f 2 | cut -d " " -f 6 | uniq | sort -u > IP_REJ
-
 echo "La liste des adresses IP des utilisateurs qui étaient rejetés mais pas bloquées est la suivante:"
 BPR=$(comm -23 IP_BLOCK IP_REJ)
 echo "${BPR}"
-
 echo "Le nombre des utilisateurs qui étaient rejetés mais pas bloquées est:"
 echo "${BPR}" | wc -l
-
-
 ;;
+
 "-d")	
 echo "La durée moyenne des blocages d'addresses IP est:"
 zgrep "Blocking" $2 | cut -d "]" -f 2 | cut -d " " -f 5 | awk '
@@ -78,15 +72,11 @@ zgrep "Blocking" $2 | cut -d "]" -f 2 | cut -d " " -f 5 | awk '
 
 
 ;;
-"-D")	
-
+"-D")	#La commande suivante utilise la commande date pour extraire la date et l'heure de chaque ligne du fichier "execD.txt", qui contient tous les attacks provenant de l'adresse IP donnée. La première ligne du résultat (la plus ancienne) correspond à la date de début des attaques, tandis que la dernière ligne (la plus récente) correspond à la date de fin des attaques.
 zgrep "Attack from" $2 | zgrep $3 | cut -d ':' -f 2- | cut -d '[' -f 1 | cut -d "m" -f 1 > execD.txt
-
 echo "La date de début des attaques de l'adresse $3 est:"
 date +"%D %T" --file=execD.txt | sort -n | head -1
-
 echo "  "
-
 echo "La date de fin des attaques de l'adresse $3 est:"
 date +"%D %T" --file=execD.txt | sort -n | tail -1
 
