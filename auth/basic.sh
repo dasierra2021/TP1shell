@@ -13,27 +13,25 @@ case $1 in
 
 "-u")	 
 echo "Les utilisateurs qui ont réussi à se connecter sont les suivantes:"
-UT_ACCEP=$(zgrep "Accepted publickey for" $2 | cut -d "]" -f 2 | cut -d " " -f 5 | uniq )
+UT_ACCEP=$(zgrep "Accepted publickey for" $2 | cut -d "]" -f 2 | cut -d " " -f 5 | uniq ) #on utilise la commande "zgrep" pour rechercher toutes les lignes contenant le texte "Accepted publickey for"; la commande "cut" pour extraire l'identifiant de l'utilisateur; et la commande "uniq" pour éliminer les doublons.
 echo "${UT_ACCEP}"
- 
 echo "En total, le nombre total d'utilisateurs qui ont réussi à se connecter est:"
-zgrep "Accepted publickey for" $2 | cut -d "]" -f 2 | cut -d " " -f 5 | uniq | wc -l
+zgrep "Accepted publickey for" $2 | cut -d "]" -f 2 | cut -d " " -f 5 | uniq | wc -l #"wc -l" pour compter le nombre total d'utilisateurs uniques ayant réussi à se connecter et affiche ce nombre à l'aide de la commande "echo".
 ;;
 
 "-U")	
-
 echo "Les utilisateurs qui n'ont pas réussi à se connecter sont les suivantes:"
-zgrep "Invalid user" $2 | cut -d "]" -f 2 | cut -d " " -f 4 | uniq 
-
-echo "En total, le nombre total d'utilisateurs qui n'ont pas réussi à se connecter est:"
-zgrep "Invalid user" $2 | cut -d "]" -f 2 | cut -d " " -f 4 | uniq | wc -l
+zgrep "Invalid user" $2 | cut -d "]" -f 2 | cut -d " " -f 4 | uniq # #on utilise la commande "zgrep" pour rechercher toutes les lignes contenant le texte "Invalid user"; la commande "cut" pour extraire l'identifiant de l'utilisateur; et la commande "uniq" pour éliminer les doublons.
+echo "En total, le nombre total d'utilisateurs qui n'ont pas réussi à se connecter est:" 
+zgrep "Invalid user" $2 | cut -d "]" -f 2 | cut -d " " -f 4 | uniq | wc -l #"wc -l" pour compter le nombre total d'utilisateurs uniques ayant réussi à se connecter et affiche ce nombre à l'aide de la commande "echo".
 ;;
 
 "-i")
 echo "La liste des adresses IP des utilisateurs qui ont réussi à se connecter sont les suivantes:"
-IP_ACC=$(zgrep "Accepted publickey for" $2 | cut -d "]" -f 2 | cut -d " " -f 7 | uniq | sort -u)
+IP_ACC=$(zgrep "Accepted publickey for" $2 | cut -d "]" -f 2 | cut -d " " -f 7 | uniq | sort -u) #"zgrep" pour rechercher toutes les lignes contenant le texte "Accepted publickey for"; "cut" pour extraire l'adresse IP de l'utilisateur à partir de la septième colonne de chaque ligne; "uniq" pour éliminer les doublons, puis triées par ordre croissant à l'aide de la commande "sort".
 echo "${IP_ACC}"
 ;;
+
 "-I")	
 echo "La liste des adresses IP des utilisateurs qui n'ont pas réussi à se connecter sont les suivantes:"
 IP_REJ=$(zgrep "Invalid user" $2 | cut -d "]" -f 2 | cut -d " " -f 6 | uniq | sort -u)
